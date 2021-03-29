@@ -1,5 +1,6 @@
 # 你平时不忙的时候，都在干嘛？
 + 我时不时会有一些问题想法冒出来，但是当时又没有时间分出时间线来解决，我就会记录下问题。然后我不忙的时候，我就会去解决这些疑惑。
+[跳转](#jump)
 
 ## const\let\var区别	
 
@@ -60,6 +61,7 @@ obj={}   //Uncaught TypeError: Assignment to constant variable.
 + for of 遍历数组
 + for in 遍历对象
 
+
 ## 缓存池	
 ## html中导入js文件到底在什么地方导入？
 + 凡是没有绑定加载事件(如：window.onload、$(document).ready())的js文件中的代码，在本文件（代码）加载完成后立即解析执行。
@@ -82,5 +84,11 @@ JavaScript文件的下载过程可以在HTML的解析过程中进行，它是按
 
 ## foreach -- some --- filter --- findIndex  --- includes  --- padStart --padEnd  (补零)
 ## 模板字符串的使用
+
+
 ## JSONP
+
+## console.log('ni ',ni) 和 console.log('ni '+ni) 
++ ,是传参进来，进行输出。逗号的位置会输出空格。
++ +是进行连接，然后输出（+后面不是字符串的会先转换成能进行+操作的类型）
 
