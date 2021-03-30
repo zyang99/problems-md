@@ -1,2 +1,3 @@
-## vue.md  关于Vue
-## problem.md  一些问题
+## vue  关于Vue
+## problems  一些思考的问题
+## ES6++  关于ES6的核心特性
