@@ -16,11 +16,34 @@
 <span id="let_const"></span>
 ## let 和 const
 + 旧的ES5只有全局作用域和函数作用域（函数内），可能导致：1、内层变量覆盖外层变量；2、变量泄露，成为全局变量。
-+ 提供**`let`** **`const`**来表示块级作用域
++ 提供**`let`** **`const`**来表示块级作用域：有if和for等块级作用域，以前只有函数块
+	- 变量作用域：变量子啊什么范围内是可用的
+	- 块级作用域：代码块内
+	- 闭包可以解决var变量泄露：是因为闭包函数是一个作用域
 + 使用**`let`**来避免循环体闭包问题
 + **`let`** **`const`**不可以重复声明变量
-+ 最好先使用`const`，有修改再使用 `let`
++ const修饰的标识符为常量，定义的时候必须赋值，一旦被赋值不可以再次赋值。（本质保存的是内存地址）
++ 常量的含义是指向的对象不能被修改，但是可以改变对象内部的属性
++ 建议：在ES6开发中，优先使用`const`，只有需要改变某一个标识符的时候再使用 `let`
 
+
+## 对象的增强写法
++ 属性增强写法
+	- ```js
+		const name = 'z';
+		const age = 18;
+		let obj = {
+			name,  //name:name
+			age   //age:age
+		}
+	```
++ 方法的增强写法
+	- ```js
+		let obj = {
+			// getName: function(){}
+			getName(){}
+		}
+	```
 <span id="array"></span>
 ## 数组的扩展
 + `Array.from()`：将伪数组对象或可遍历兑现转换为真数组
@@ -93,6 +116,46 @@
 	}
 	// 0 "a"
 	// 1 "b"
+	```
+## 数组高阶函数的使用 filter过滤 map映射 reduce
++ ```js
+		const nums = [12, 20, 300, 94, 399, 100, 40, 50]
+		// 需求：1、取出所有小于100的数 2、将这些数全部转化为2倍 3、然后把转化后的所有数加起来
+		// filter/map/reduce
+
+		// filter 遍历数组，并且经过操作，返回过滤后的原数组
+		// filter中的回调函数：必须返回一个boolean值
+		// true：函数内部会自动将这次回调的n加入到新的数组中去
+		// false：函数内部会过滤掉这次的n
+		let newNums = nums.filter(n => {
+		  return n < 100
+		})
+		console.log(newNums);  // [12, 20, 94, 40, 50]
+
+		// map 将数组中每一个元素进行某种操作。然后返回这个新的数组
+		let newNums2 = newNums.map(n => {
+		  return n * 2
+		})
+		console.log(newNums2);  // [24, 40, 188, 80, 100]
+
+		// reduce 作用对数组中所有的内容进行汇总 
+		// 参数1：回调函数。  参数2： 初始值
+		// preValue: 上一次的返回值   每一次遍历值
+		let total = newNums2.reduce((preValue, n) => {
+		  return preValue + n
+		}, 0)
+		// 第一次： preValue：0  n：24
+		// 第二次： preValue：0+20  n：40
+		// 第三次： preValue：0+20+40  n：188
+		// 第四次： preValue：0+20+40+188  n：80
+		// 第四次： preValue：0+20+40+188+80  n：100   这里就return 0+20+40+188+80+100
+		console.log(total);   // 432
+
+		// 高阶使用
+		let Total = nums.filter(n => n < 100)
+		.map(n => n * 2)
+		.reduce((pre, n) => pre + n, 0)
+		console.log(Total);   // 432
 	```
 
 <span id="promise"></span>	
@@ -383,6 +446,10 @@
 		- ```js
 			const { log } = console;
 			log('hello') // hello
+			
+			const name = 'nihao';
+			let {name}
+			//name:'nihao'
 		```
 	- 实际上，对象的解构赋值是下面形式的简写。也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。真正被赋值的是后者，而不是前者。
 		- ```js
