@@ -60,7 +60,7 @@
 		- .capture --------- 实现捕获触发事件机制（默认冒泡的 从内往外）
 		- .self --------- 实现事件只有在元素本身触发时才调用（阻止当前元素的冒泡）
 		- .once -------- 事件默认只触发一次（once比较特殊）
-		- .native---------在组件中使用的
+		- .native---------在组件中使用的：监听组件根元素的原生事件
 		- keyup.enter
 + v-for 实现列表循环。v-for="item of list"(也可以用in，但是用of更符合javascript迭代器语法)
  - in 后面可以放：普通数组（item，index），对象数组（obj，index），对象（val,key,index），数字（数字从1开始迭代）
@@ -77,7 +77,7 @@
 	- select： 单个：通过value 一个值   多个通过数组
 	- 值绑定：真实开发中，input的值可能是从后台获取或者定义在data中的，可以通过v-bind:value动态的给value绑定值。
 	- 修饰符
-		- lazy ：默认input下回进行实时更新。该修饰符旨在数据在失去焦点或者回车时才会更新
+		- lazy ：默认in put下回进行实时更新。该修饰符旨在数据在失去焦点或者回车时才会更新
 		- number：默认input会把输入的内容转为string。该修饰符把输入的数字定为number类型。当然输入string不会变化
 		- trim：自动剥除字符串两边的空格
 
@@ -261,10 +261,10 @@
 + ***父组件向子组件传值：***
 	- 1.通过v-bind绑定。2.子组件通过props接收传递数据
 	- 注意： 子组件中，默认无法访问父组件的data上的数据和methods方法
-	- 父组件可以在引用子组件的时候通过属性绑定的形式（v-bind),把需要传递给子组件的数据传递到子组件内部供使用
+	- 父组件可以在引用子组件的时候通过属性绑定的形式（v-bind)（绑定是为了传递变量，当直接是值得时候不需要绑定）,把需要传递给子组件的数据传递到子组件内部供使用
 	- ``` 
 	// props：组件中的所有 paops 中的数据，都是通过父组件传递给子组件的
-    // props中数据----------只读（不要去修改，其实是可以修改的，但是有警告）
+    // props中数据----------只读（不要去修改，其实是可以修改的，通过父组件来修改或者使用计算属性或者data来进行替代修改，但是有警告）
     // 从父组件传递过来的值需要在paops数组中定义一下，这样才能使用这个数据
 	```
 	- props 除了使用数组，还可以使用对象，使用对象的时候，可以写很多东西
@@ -286,7 +286,7 @@
 			}
 		},
 	```
-+ ***父组件向子组件传递方法：*** 通过自定义事件来完成
++ ***子组件向父组件传递：*** 通过自定义事件来完成
 	- 通过v-on绑定事件来传递方法。v-on不仅可以监听DOM事件，也可以用于组件间的自定义事件。
 	- 自定义事件流程：
 		- 在子组件中，通过$emit来触发事件。
@@ -294,16 +294,46 @@
 	- 在子组件中methods中使用`this.$emit('绑定的事件名',传参1，传参2)`来得到父组件的方法。
 	- 如上，可以通过传参1，传参2.。。。将子组件传值给父组件
 
-+ 使用ref获取dom和组件(可以使用这个组件引用来实现父组件获取子组件的数据和方法)
-	- 在标签上添加 ref='名称'。 在vm实例上有$refs上会引用到
-	- ```this.$refs.名称.```
++ 父子组件访问
+	+ 父组件访问子组件： $children-->数组类型  。 $refs--->对象类型	
+		+ 使用ref获取dom和组件(可以使用这个组件引用来实现父组件获取子组件的数据和方法)
+		- 在组件标签上添加 ref='名称'。 在vm实例上有$refs上会引用到
+		- 再调用  `this.$refs.名称.` 	
+	+ 子组件访问父组件： $parent $root
  
+## 插槽 slot
++ 组件的插槽为了让我们封装的组件更加具有扩展性
++ 让使用者可以决定内部的一些内容到底展示什么
++ 插槽基本使用：
+	+ 在组件模板中使用：<slot></slot>
+	+ 插槽默认值：<slot>默认值</slot>。---有内容就会被覆盖
+	+ 在组件调用的时候，在组件标签中间写入内容。
++ slot 和slot-scope已废弃，统一使用v-slot:，缩写为#
++ 具名插槽---多个插槽，指定改哪个插槽
+	+ 在组件模板中指定插槽的名字：<slot name="名字"></slot>
+	+ 在组件调用的时候，必须将需要改动的内容使用template包裹，并且使用v-slot指定插槽名
+	+ `<template v-slot:"名字">要改动的内容</template>`  ==》v-slot:"名字" -> #名字
++ 编译作用域
+	+  父级模板中所有内容都是在父级作用域内编译的，子级模板中左右内容都是在子级作用域内编译的。
+	+  在哪个模板就是在哪个作用域使用  
++ 作用域插槽
+	+ 在父组件中想要使用子组件的数据，进行其他操作。父组件替换插槽的标签（展示方式或者操作），内容还是子组件提供。
+	+ 1、在子组件模板插槽上，通过v-bind:将数据绑定到一个属性`dataname`上
+	+ 2、在父组件模板上调用子组件标签，通过`v-slot:插槽名="插槽prop名"`
+	+ 3、在子组件标签中，就可以使用`插槽prop名.dataname`来使用了
 
 <span id="router"></span>
-## 路由 
-+ 后端路由：每个URL地址对应服务器上不同的资源
-+ 前端路由：简单的说就是通过hash（http请求不会包含hash相关的内容）改变来切换页面的方式---------[URL中的hash(#)](https://www.cnblogs.com/lishanlei/p/10707824.html)
-+ ### VueRouter 的使用
+## VueRouter路由 
++ 路由提供了两种机制：路由和转送
+	- 路由：决定数据包从来源到目的地的路径
+	- 转送： 将输入端的数据转移到合适的输出端
++ 路由表：本质上是一个映射表，决定了数据包的指向
++ 后端路由：每个URL地址对应服务器上不同的资源。后端处理URL和页面之间的映射关系.
++ 前端路由：SPA单页面富应用，整个网页只有一个html页面 
+	+ 简单的说就是通过hash（http请求不会包含hash相关的内容）改变来切换页面的方式---------[URL中的hash(#)](https://www.cnblogs.com/lishanlei/p/10707824.html)
+	+ url改变，页面不进行整体刷新，只是局部的刷新
++ ### VueRouter 的使用：基于路由和组件
++ 路由用于设定访问路径，将路径和组件映射起来；在vue-router的单页面应用中，页面路径的改变就是组件的切换
 	1. 导入Vue，再导入VueRouter。
 		- （如果是模块化机制编程，webpack等。需要Vue.use(VueRouter)） 使用外部调用文件 会自动安装
 	2. 定义好（路由）需要的组件模板对象。
@@ -313,15 +343,75 @@
 		- 当导入vue-router后，在window全局上有一个路由构造函数：VueRouter。在new 路由对象的时候，可以为构造函数传递一个配置对象（路由配置规则）--> route:配置对象
 	5. 特别注意：实例中的属性是**routes**  不是**routers**
 	6. 在Vue实例上挂载路由： `router`属性
-	- 在html中：
-		- `<router-link to='/path'></>` to 属性来指定连接。 该标签<router-link>会默认渲染称为<a>标签 tag改变默认渲染
+	7. 在html中,使用路由：
+		- `<router-link to='/path'></>` 
+			- to 属性来指定连接。 该标签`<router-link>`会默认渲染称为`<a>`标签 
+			- tag 属性改变默认渲染。 tag='button' 指定渲染为button---
+				- **该属性已经被废弃，使用v-slot="{href,navigate}" custom来替代这个，然后下面使用改变的标签，绑定<button :href="href" @click="navigate"></button>**
+			- replace 用户无痕浏览（不能使用网页上的返回前进按钮）
+			- active-class
 		- `<router-view></>` 路由出口：路由匹配到的组件将渲染到这里 
-		- name  会渲染相应路由配置下的对应component组件。使用这个**命名视图实现经典布局**
-+ 使用props 进行路由传参。（还有params 和 query）
+			- name  会渲染相应路由配置下的对应component组件。使用这个**命名视图实现经典布局**
+		+ 除了使用router link实现路由跳转，还可以通过代码方式来修改路由（还是通过vue-router）
+			- `this.$router.push('/home')`
++ 动态路由：在某些情况下，一个页面的path路径可能是不确定的 。也是路由传递数据的一种方式
++ 路由懒加载：
+	- 当打包构建应用时，JS包会变得非常大，影响页面加载。
+	- 如果我们把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就高效了
+	- 主要作用就是将路由对应的组件打包成一个个的js代码块，只有在这个路由被访问到的时候，才加载对应的组件
+	- `component: () => import('../views/About.vue')`
 + 子路由children实现嵌套
-	- 在路由配置的数组中，对象中，除了path，component属性，还有children属性。在children中再写配置对象数组。这样实现子路由嵌套。
+	- 在路由配置的数组中，对象中，除了path，component 属性，还有children属性。在children中再写配置对象数组。这样实现子路由嵌套。
 	- 子路由中的path最好不要带'/'。这样拼接路径才是正确的。 如果带'/'，则路径不需要父路由的路径
-	
++ 路由配置对象里面的属性
+	- ```js
+		{
+			path: '/',             //路由url
+			redirect:'/home',          // 重定向
+			name:'H',   
+			component: ()=>import('../home'),    // 模板：懒加载模式
+			children:[{}],      //子路由：嵌套路由
+			meta:{title:'首页'},  //元数据：描述数据的数据
+			beforeEnter:(to,from,next)=>{next()},
+		}
+	```
++ 路由参数传递
+	- 通过params 
+		- 配置路由格式：`/router/:id`
+		- 传递方式：在path后面跟上对应的传递值
+		- 传递后形参的路径：`/router/123` `/router/abc`
+	- 通过query
+		- 配置路由格式：`/router`，就是普通配置
+		- 传递方式：对象中使用query的key作为传递方式
+		- 传递后形成的路径：`/router?id=123` `/router?abc`
+	- 接收参数
+		- `$route.params` 和 `$route.query`
++ $route 和 $router
+	- $router是VueRouter实例，想要导航到不同URL，则使用$router.push方法
+	- $route为当前router跳转对象里面可以获取name、path、query、params等
++ 导航守卫：监听路由的跳转。为了能在跳转中做操作。
+	- 其一：可以使用生命周期函数来实现
+	- 其二：使用**全局**导航守卫：
+		- ```js
+			//前置钩子(hook)：在路由跳转之前。需要主动调用next()
+			router.beforeEach((to,from,next)=>{
+				// 路由从from跳转到to
+				next()  //next()必须调用
+			})
+			//后置守卫:跳转之后调用。不需要主动调用next()
+			router.afterEach((to,from)=>{
+				........
+			})
+		````
+	- 除了全局守卫：还有路由独享的守卫：`beforeEnter`在路由配置对象属性上配置
+	- 还有组件守卫：`beforeRouteEnter` `beforeRouteUpdate` `beforeRouteLeave`
++ **keep-alive**
+	- keep-alive是Vue内置的一个组件，可以使被包含的组件保留状态，避免重新渲染
+	- router-view是VueRouter的一个组件，被keep-alive包裹后，这里路径匹配到的试图组件都会被缓存
+	- 使用keep-alive将router-view包裹起来。在这个router-view渲染的时候就会保存状态，当离开去其他router-view渲染时候才会销毁。
+	- `keep-alive`又两个非常重要的属性：
+		- include-字符串或正则表达式，只有匹配的组件会被缓存
+		- exclude-字符串或正则表达式，任何匹配的组件都不会被缓存
  
 <span id="computed"></span>
 ## methods	*vs* watch *vs* computed 
@@ -334,11 +424,97 @@
 * 相比之下，每当触发重新渲染时，调用方法将**总会再次执行函数**。
 * 为什么需要缓存？加入一个计算属性依赖于另外一个计算属性。如果没有缓存，我们将多次执行。
 
+## VueX---状态管理工具---还是响应式的
++ 状态管理：采用集中式存储管理应用得所有组件得状态，并以相应得规则保证状态一种可预测得方式发生变化
+	+ 通俗得将：可以简单得看成把需要多个组件共享得变量全部存储在一个对象里面；然后将这个对象放在顶层得Vue实例中，让其他组件可以使用。
++ 管理什么状态？
+	- 用户的登录状态、用户名称、头像、地理位置等等
+	- 商品的收藏、购物车中的物品等等
++ Vuex背后的基本思想
+	- 将共享的状态抽取出来，交给Vuex统一管理；之后每个视图，按照规定，进行访问和修改等操作。
+	- ![规定](vue_files/4.jpg)
++ 使用：
+	1. 导入Vue,Vuex：import.....
+	2. 安装Vuex插件：Vue.use(Vuex)
+	3. 新建Vuex对象：const store = new Vuex.store({.....}) ：几个核心概念
+		- State：里面存放状态，单一状态树（single source of truth，单一数据源 ）：
+			- 在其他组件中使用使用：通过this. $store.state.属性名来访问状态--可以放到计算属性里面来获取
+		- Getters:类似与组件中的计算属性
+			- 接收state作为第一个参数 `getter(state){....}`
+			- 接收getter作为第二个参数 `getter(state,getter){....}`
+			- 接收其余参数：通过返回方法来调用：`getter(state,getter){ return function(参数){}}`
+				- 同理，在计算属性里面，要是需要传入参数，也可以使用返回方法的形式来进行
+		- Actions：里面做异步操作--Backend API 后端接口
+			- 提交的是mutation，而不是直接更新状态。主要是为了做异步操作
+			- `action(context,payload){ context.commit('mutation',payload)}`
+				- `action({commit}){commit('mutation')}`  ----  解构赋值
+			- 组件里面分发：`this.$store.dispatch('action',payload)`
+		- Mutations：里面是同步操作---Devtools记录时哪个做的操作----尽量做单一操作
+			- store状态的个更新唯一方式：提交mutation
+				- 通过this.$store.commit('mutation中方法')来修改状态----同步操作
+			- mutation主要包括：事件类型type（字符串）；一个回调函数（handler）第一个参数是state。
+				- 接收一个参数`increment(state){}`
+				- 接收两个参数（第二个参数是自定义的）`increment(state,count){}`
+				- 带参数的提交：`this.$store.commit('increment',payload)`---payload负载参数，可以是对象
+				- 提交风格：上面是提交的普通风格。另外一种提交风格：
+					- ```js
+						this.$store.commit({
+							type:'increment',
+							count:count           //注意：在Mutation里面接收参数应该是increment(state,payload){payload.count}才能取到
+						})
+					```
+		- 使用常量替代事件类型：使用另外的文件保存事件类型别名，导出导入来使用
+		- Module：由于应用的开发，状态树可能会越来越臃肿了，所以可以按模块使用
+			- 在外部定义：const a = {state:{},....}。  modules:{a:a}
+			- `this.$store.state.a.name`
+			- 使用mutations---`this.$store.commit()`
+			- 使用getters---`this.$store.getters`
+				- 在模块里面，getters里面除了state，getters，还可以有第三个参数rootstate
+			- 使用action---context只能提交自己module里面的mutation，但是可以context.rootState来调用
+	4. 导出对象:export defalut store
+	+ store文件目录项目结构
 
-## nrm 
-+ 只是提供了一些常用的NPM包镜像地址，能够让我们更好的下载。
+
+		├── index.html
+		├── main.js
+		├── api
+		│   └── ... # 抽取出API请求
+		├── components
+		│   ├── App.vue
+		│   └── ...
+		└── store
+			├── index.js          # 我们组装模块并导出 store 的地方
+			├── actions.js        # 根级别的 action
+			├── mutations.js      # 根级别的 mutation
+			└── modules
+				├── cart.js       # 购物车模块
+				└── products.js   # 产品模块
+		
+## 网络模块封装 axios
++ axios(config)
++ 并发请求
+	+ axios.all([axios1,axios2]).then(result=>{}) 
+	+ axios.spread([axios1,axios2]).then((res1,re2)=>{})
++ 全局配置
+	+ axios.defaluts.
++ 封装
++ 拦截器
+	- 用于在发送每次请求前或者得到相应后，进行对应的处理
+	- axios.interceptors.request.use(两个回调)
+	- axios.interceptors.response.use(两个回调)
+	- 拦截器做什么
+		- config中的一些信息不符合服务器要求，需要修改
+		- 每次发送请求或者请求成功，加载界面动画之类的
+		- 某些网络请求（如登录），必须携带一些特殊的信息
 
 
-## 动态参数约束
-* 使用的时候最好使用小写字母来命名，因为浏览器会把attribute名强制转换成小写	
 
+
+# 项目开发
+1. 新建项目-划分目录结构
+2. 配置基本的css文件架构-base.css-normalize.css
+3. 配置vue.config.js  ---- .editorconfig
+	- 配置变量别名
+	- 浏览器自动打开
+4. 项目模块划分开发：tabbar-》项目映射关系
+5. 首页开发
