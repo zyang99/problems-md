@@ -6,8 +6,8 @@
 |[动画过渡](#动画过渡)	|[组件化](#component)	|	[路由](#router)|
 |	[计算属性](#computed)|	|	|
 
-
 <span id="vue优点"></span>
+
 ## vue.js优点    视图+脚本
 * 体积小
 * 更高的运行效率  
@@ -47,7 +47,6 @@
 		[v-cloak]{
 		  display: none;
 		}
-	```
 + v-html  用来渲染html，也会覆盖原有内容
 + v-bind（缩写为：） 用来绑定属性的一个指令，用于告诉属性后面的引用是一个表达式
 	- 动态绑定属性：比如a元素的href或者img元素的src属性
@@ -85,24 +84,23 @@
 <span id="filters"></span>
 ## 过滤器  ---vue允许自定义过滤器，可被用于常见文本的格式化（时间..）只能用在插值表达式和v-bind表达式中，使用管道调用。可多次调用多个过滤器
  + 全局过滤器：每个Vue实例都可以使用（先过滤器再Vue实例）
-	- ```
-	Vue.filter('过滤器名称',function(data){})
-	``` 
-	- function中的第一个参数永远是管道符前面传过来的参数，还可以传参进来
-	- {{ name | 过滤器名字 }}
+	- ```js
+	  Vue.filter('过滤器名称',function(data){})
+	  - function中的第一个参数永远是管道符前面传过来的参数，还可以传参进来
+	  - {{ name | 过滤器名字 }}
+	  ```
  + 定义私有过滤器（局部）
 	- Vue实例中的`filters`属性（对象）
-	- ```
-	filters:{
-		过滤器名称:function(){
-			。。。。。。。。。。
-		}
-	}
-	```
-	- 如果全局过滤器和私有过滤器重名，就近原则调用--私有过滤器
-
+	- ```js
+	  filters:{
+	  过滤器名称:function(){
+	  	。。。。。。。。。。
+	  }
+	  }
+	  - 如果全局过滤器和私有过滤器重名，就近原则调用--私有过滤器
 
 <span id="personalcodes"></span>
+
 ## 自定义指令 
 + 使用：`Vue.directive()` 定义全局指令
 	- 参数1：指令名称。定义的时候，名称前不需要加`v-` 。但是调用的时候必须在指令名称前加上```v-```前缀调用。
@@ -137,9 +135,10 @@
 + 创建期间的钩子函数： `beforeCreate` `created` `beforeMount` `mounted` 
 + 运行期间的钩子函数： `beforeUpdate` `updated`
 + 销毁期间的钩子函数： `beforedestroy` `destroyed`
-![](vue_files/1.png)
+	![](vue_files/1.png)
 	
 	
+
 <span id="动画过渡"></span>	
 ## 动画过渡
 + `transition`的属性：`tag`指定要渲染的元素，默认为span  `name`自定义v-前缀 `mode`设置组件切换时候的模式
@@ -165,14 +164,13 @@
 	```
 + 实现多个组件过渡
 	- ```js
-	<!-- 使用transition包裹实现组件模板切换动画过渡 -->
+	  <!-- 使用transition包裹实现组件模板切换动画过渡 -->
 	    <!-- out-in 是解决就组件消失和新组件出现同步的问题.这样就是等组件消失完才慢慢出现 -->
 	    <transition  mode="out-in">  
 	      <component :is="comName"></component>
 	    </transition>
-	```
- 
- 
+
+
  <span id="component"></span>
  ## 组件化：为了拆分Vue实例的代码量，以不同组件划分功能模块
  + 模块化和组件化区别：
@@ -262,11 +260,11 @@
 	- 1.通过v-bind绑定。2.子组件通过props接收传递数据
 	- 注意： 子组件中，默认无法访问父组件的data上的数据和methods方法
 	- 父组件可以在引用子组件的时候通过属性绑定的形式（v-bind)（绑定是为了传递变量，当直接是值得时候不需要绑定）,把需要传递给子组件的数据传递到子组件内部供使用
-	- ``` 
-	// props：组件中的所有 paops 中的数据，都是通过父组件传递给子组件的
+	- ``` javascript
+	  // props：组件中的所有 paops 中的数据，都是通过父组件传递给子组件的
     // props中数据----------只读（不要去修改，其实是可以修改的，通过父组件来修改或者使用计算属性或者data来进行替代修改，但是有警告）
     // 从父组件传递过来的值需要在paops数组中定义一下，这样才能使用这个数据
-	```
+	```javascript
 	- props 除了使用数组，还可以使用对象，使用对象的时候，可以写很多东西
 	- （props数据中的驼峰标识在使用的时候使用：cM -> c-m）最好就使用小写即可
 	- ```js
@@ -290,7 +288,7 @@
 	- 通过v-on绑定事件来传递方法。v-on不仅可以监听DOM事件，也可以用于组件间的自定义事件。
 	- 自定义事件流程：
 		- 在子组件中，通过$emit来触发事件。
-		- 在负组件中，通过v-on来监听子组件事件   
+		- 在父组件中，通过v-on来监听子组件事件   
 	- 在子组件中methods中使用`this.$emit('绑定的事件名',传参1，传参2)`来得到父组件的方法。
 	- 如上，可以通过传参1，传参2.。。。将子组件传值给父组件
 
@@ -300,17 +298,17 @@
 		- 在组件标签上添加 ref='名称'。 在vm实例上有$refs上会引用到
 		- 再调用  `this.$refs.名称.` 	
 	+ 子组件访问父组件： $parent $root
- 
+
 ## 插槽 slot
 + 组件的插槽为了让我们封装的组件更加具有扩展性
 + 让使用者可以决定内部的一些内容到底展示什么
 + 插槽基本使用：
-	+ 在组件模板中使用：<slot></slot>
-	+ 插槽默认值：<slot>默认值</slot>。---有内容就会被覆盖
+	+ 在组件模板中使用：`<slot></slot>`
+	+ 插槽默认值：`<slot>默认值</slot>`。---有内容就会被覆盖
 	+ 在组件调用的时候，在组件标签中间写入内容。
 + slot 和slot-scope已废弃，统一使用v-slot:，缩写为#
 + 具名插槽---多个插槽，指定改哪个插槽
-	+ 在组件模板中指定插槽的名字：<slot name="名字"></slot>
+	+ 在组件模板中指定插槽的名字：`<slot name="名字"></slot>`
 	+ 在组件调用的时候，必须将需要改动的内容使用template包裹，并且使用v-slot指定插槽名
 	+ `<template v-slot:"名字">要改动的内容</template>`  ==》v-slot:"名字" -> #名字
 + 编译作用域
@@ -320,7 +318,7 @@
 	+ 在父组件中想要使用子组件的数据，进行其他操作。父组件替换插槽的标签（展示方式或者操作），内容还是子组件提供。
 	+ 1、在子组件模板插槽上，通过v-bind:将数据绑定到一个属性`dataname`上
 	+ 2、在父组件模板上调用子组件标签，通过`v-slot:插槽名="插槽prop名"`
-	+ 3、在子组件标签中，就可以使用`插槽prop名.dataname`来使用了
+	+ 3、在父组件引用的子组件标签中，就可以使用`{{插槽prop名.dataname}}`来使用了
 
 <span id="router"></span>
 ## VueRouter路由 
@@ -392,7 +390,7 @@
 + 导航守卫：监听路由的跳转。为了能在跳转中做操作。
 	- 其一：可以使用生命周期函数来实现
 	- 其二：使用**全局**导航守卫：
-		- ```js
+		- ```javascript
 			//前置钩子(hook)：在路由跳转之前。需要主动调用next()
 			router.beforeEach((to,from,next)=>{
 				// 路由从from跳转到to
@@ -402,17 +400,17 @@
 			router.afterEach((to,from)=>{
 				........
 			})
-		````
 	- 除了全局守卫：还有路由独享的守卫：`beforeEnter`在路由配置对象属性上配置
 	- 还有组件守卫：`beforeRouteEnter` `beforeRouteUpdate` `beforeRouteLeave`
 + **keep-alive**
+	
 	- keep-alive是Vue内置的一个组件，可以使被包含的组件保留状态，避免重新渲染
 	- router-view是VueRouter的一个组件，被keep-alive包裹后，这里路径匹配到的试图组件都会被缓存
 	- 使用keep-alive将router-view包裹起来。在这个router-view渲染的时候就会保存状态，当离开去其他router-view渲染时候才会销毁。
 	- `keep-alive`又两个非常重要的属性：
 		- include-字符串或正则表达式，只有匹配的组件会被缓存
 		- exclude-字符串或正则表达式，任何匹配的组件都不会被缓存
- 
+
 <span id="computed"></span>
 ## methods	*vs* watch *vs* computed 
 + computed计算属性一般没有set方法，所以是只读属性。但是也可以写上set方法
@@ -462,7 +460,7 @@
 							type:'increment',
 							count:count           //注意：在Mutation里面接收参数应该是increment(state,payload){payload.count}才能取到
 						})
-					```
+						```
 		- 使用常量替代事件类型：使用另外的文件保存事件类型别名，导出导入来使用
 		- Module：由于应用的开发，状态树可能会越来越臃肿了，所以可以按模块使用
 			- 在外部定义：const a = {state:{},....}。  modules:{a:a}
@@ -489,7 +487,7 @@
 			└── modules
 				├── cart.js       # 购物车模块
 				└── products.js   # 产品模块
-		
+
 ## 网络模块封装 axios
 + axios(config)
 + 并发请求
